@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import express from "express";
+import jwt from "jsonwebtoken";
 import { fake } from "sinon";
 import request from "supertest";
 import {
@@ -8,8 +9,11 @@ import {
   Method,
 } from "../../configs/IEndpointConfig";
 import Endpoint from "../../entities/endpoint/endpoint";
-
+import { SECRET } from "../../middlewares/authJWT/authJWT";
 const path = "/hi";
+const func = (req, res, next) => {
+  next();
+};
 let sayHi: IEndpointConfig;
 let app: express.Application;
 
@@ -53,36 +57,73 @@ describe("entities - endpoint", () => {
 
   it("it should inject middleware", async () => {
     // 使用sinon的fake包裝function, 回傳的函數就可以用來偵測是否有被呼叫
-    const middleware = fake((req, res, next) => {
-      next();
-    });
+    const middleware = fake(func);
     sayHi.middleWares.push(middleware);
     const sayHiEndpoint = new Endpoint(sayHi);
     sayHiEndpoint.register(app);
     await request(app).get(path).expect(200);
-    expect(middleware.called).to.be.true;
+    // expect(middleware.called).to.be.true;
     expect(middleware.callCount).equal(1);
   });
 
   it("it should inject mutiple middlewares", async () => {
-    const middlewares = [
-      fake((req, res, next) => {
-        next();
-      }),
-      fake((req, res, next) => {
-        next();
-      }),
-    ];
+    const middlewares = [fake(func), fake(func)];
     sayHi.middleWares.push(...middlewares);
     const sayHiEndpoint = new Endpoint(sayHi);
     sayHiEndpoint.register(app);
     await request(app).get(path).expect(200);
-    expect(middlewares[0].called).to.be.true;
-    expect(middlewares[1].called).to.be.true;
+    expect(middlewares[0].callCount).equal(1);
+    expect(middlewares[1].callCount).equal(1);
   });
 
   it("it should authenticate JWT request", async () => {
-    // todo...
+    const token = jwt.sign(
+      { name: "claire", exp: Math.floor(Date.now() / 1000) + 60 * 60 },
+      SECRET
+    );
+    sayHi.authType = AuthType.JWT;
+    const sayHiEndpoint = new Endpoint(sayHi);
+    sayHiEndpoint.register(app);
+    await request(app)
+      .get(path)
+      .set("Authorization", "Bearer " + token)
+      .expect(200);
+  });
+
+  it("it should failed authenticate JWT request", async () => {
+    const wrongToken = jwt.sign(
+      { name: "claire", exp: Math.floor(Date.now() / 1000) + 60 * 60 },
+      "fakesecret"
+    );
+
+    sayHi.authType = AuthType.JWT;
+    const sayHiEndpoint = new Endpoint(sayHi);
+    sayHiEndpoint.register(app);
+    await request(app).get(path).expect(403);
+    await request(app)
+      .get(path)
+      .set("Authorization", "Bearer " + wrongToken)
+      .expect(401);
+  });
+
+  it("it should failed authenticate if the token expired or no expired time", async () => {
+    const token = jwt.sign(
+      { exp: Math.floor(Date.now() / 1000) - 60 * 60 },
+      SECRET
+    );
+    const emptyTime = jwt.sign({}, SECRET);
+    sayHi.authType = AuthType.JWT;
+    const sayHiEndpoint = new Endpoint(sayHi);
+    sayHiEndpoint.register(app);
+    await request(app)
+      .get(path)
+      .set("Authorization", "Bearer " + token)
+      .expect(401);
+
+    await request(app)
+      .get(path)
+      .set("Authorization", "Bearer " + emptyTime)
+      .expect(401);
   });
 
   it("it should authenticate HMAC request", async () => {
