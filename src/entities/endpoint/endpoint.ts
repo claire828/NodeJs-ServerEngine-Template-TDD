@@ -1,8 +1,8 @@
-import { AuthType, IEndpointConfig, Method } from "configs/IEndpointConfig";
 import express from "express";
-import { checkSchema, validationResult } from "express-validator";
-import authHmac from "middlewares/authHmac/authHmac";
-import authJWT from "middlewares/authJWT/authJWT";
+import { AuthType, IEndpointConfig } from "../../configs/IEndpointConfig";
+import authHmac from "../../middlewares/authHmac/authHmac";
+import authJWT from "../../middlewares/authJWT/authJWT";
+import { validate } from "../../middlewares/validate/validate";
 
 export default class Endpoint {
   private config: IEndpointConfig;
@@ -23,7 +23,8 @@ export default class Endpoint {
   // 外部注入Server, 將之把所有裝飾器做註冊
   public register(app: express.Application) {
     this.initDecorate();
-    app[this.config.method].apply(this.config.path, ...this.middlewares);
+    // this.middlewares.forEach((x) => console.log(`is:${x}`));
+    app[this.config.method](this.config.path, ...this.middlewares);
   }
 
   // 先驗證類型 Auth
@@ -42,8 +43,7 @@ export default class Endpoint {
 
   // 驗證參數正確性 params - express validator schema
   private addValidator() {
-    this.middlewares.push(checkSchema(this.config.validator));
-    this.middlewares.push(validationResult(this.config.validator));
+    this.middlewares.push(...validate(this.config.validator));
 
     return this;
   }
@@ -82,4 +82,4 @@ export default class Endpoint {
 
 // 裝飾法：用在通常後端的寫法，全部裝飾好，然後針對這個路徑來做註冊。
 // 原本我的純走ＯＯ，比較屬於for 單個repository而生。
-// 新的這種寫法，可以變成template運用，所以我推推
+// 新的這種寫法，可以變成template運用，所以我推推;;;
