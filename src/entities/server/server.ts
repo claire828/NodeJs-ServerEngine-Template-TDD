@@ -1,6 +1,5 @@
 import express from "express";
 import http from "http";
-import { reject } from "underscore";
 import iServerConfig from "../../configs/IServerConfig";
 
 // TODO 未來可以加入https伺服器，根據憑證決定創建立
@@ -58,7 +57,7 @@ export default class Server {
   public async shutdown() {
     return new Promise((resolve) => {
       this.server.on("close", async (error: any) => {
-        if (error) console.log(`error:${error}`);
+        if (error) console.log(`server shutdown error:${error}`);
 
         await Promise.all(
           this.config.shutdownCallbacks.map((callback) => callback())

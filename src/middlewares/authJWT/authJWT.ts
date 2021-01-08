@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-// TODO 要把資料改成env
-export const SECRET = "helloiamclaire";
+export const SECRET = process.env.JWT_SECRET;
 interface Idecode {
   exp: number;
   name?: string;
@@ -11,7 +10,7 @@ interface Idecode {
    such as: Authorization: <type> <credentials>
    JWT 是一種 Bearer Token，因此在Authorization帶入：
    Authorization: 'Bearer ' + token */
-
+// JWT最好要使用在https的伺服器才安全。
 // 目前這邊就Method.Get + Header
 // 如果要Post + body 那要再另外改一下下
 export default function authJWT(
@@ -25,7 +24,7 @@ export default function authJWT(
   }
 
   // 這邊做驗證
-  jwt.verify(token, SECRET, (err, decode: Idecode) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decode: Idecode) => {
     if (err) return res.status(401).json({ err: err.message });
     if (!decode.exp) return res.status(401).json({ err: "expired time" });
 

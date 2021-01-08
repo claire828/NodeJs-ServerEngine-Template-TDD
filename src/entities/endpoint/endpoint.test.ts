@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import express from "express";
+import faker from "faker";
 import jwt from "jsonwebtoken";
 import { fake } from "sinon";
 import request from "supertest";
@@ -9,7 +10,8 @@ import {
   Method,
 } from "../../configs/IEndpointConfig";
 import Endpoint from "../../entities/endpoint/endpoint";
-import { SECRET } from "../../middlewares/authJWT/authJWT";
+import signPayload from "../../utils/hmac/signPayload/signPayload";
+
 const path = "/hi";
 const func = (req, res, next) => {
   next();
@@ -78,8 +80,11 @@ describe("entities - endpoint", () => {
 
   it("it should authenticate JWT request", async () => {
     const token = jwt.sign(
-      { name: "claire", exp: Math.floor(Date.now() / 1000) + 60 * 60 },
-      SECRET
+      {
+        name: faker.lorem.word(),
+        exp: Math.floor(Date.now() / 1000) + 60 * 60,
+      },
+      process.env.JWT_SECRET
     );
     sayHi.authType = AuthType.JWT;
     const sayHiEndpoint = new Endpoint(sayHi);
@@ -92,8 +97,11 @@ describe("entities - endpoint", () => {
 
   it("it should failed authenticate JWT request", async () => {
     const wrongToken = jwt.sign(
-      { name: "claire", exp: Math.floor(Date.now() / 1000) + 60 * 60 },
-      "fakesecret"
+      {
+        name: faker.lorem.word(),
+        exp: Math.floor(Date.now() / 1000) + 60 * 60,
+      },
+      faker.lorem.word()
     );
 
     sayHi.authType = AuthType.JWT;
@@ -109,9 +117,9 @@ describe("entities - endpoint", () => {
   it("it should failed authenticate if the token expired or no expired time", async () => {
     const token = jwt.sign(
       { exp: Math.floor(Date.now() / 1000) - 60 * 60 },
-      SECRET
+      process.env.JWT_SECRET
     );
-    const emptyTime = jwt.sign({}, SECRET);
+    const emptyTime = jwt.sign({}, process.env.JWT_SECRET);
     sayHi.authType = AuthType.JWT;
     const sayHiEndpoint = new Endpoint(sayHi);
     sayHiEndpoint.register(app);
@@ -127,6 +135,20 @@ describe("entities - endpoint", () => {
   });
 
   it("it should authenticate HMAC request", async () => {
-    // todo...
+    const fakepayload = { name: faker.lorem.word() };
+    const data = signPayload(fakepayload);
+    sayHi.authType = AuthType.HMAC;
+    const sayHindpoint = new Endpoint(sayHi);
+    sayHindpoint.register(app);
+    await request(app).get(path).query(data).expect(200);
+  });
+
+  it("it should failed authenticate HMAC request if the payload is wong", async () => {
+    const data = signPayload({});
+    data.payload = { age: 10 };
+    sayHi.authType = AuthType.HMAC;
+    const sayHindpoint = new Endpoint(sayHi);
+    sayHindpoint.register(app);
+    await request(app).get(path).query(data).expect(400);
   });
 });

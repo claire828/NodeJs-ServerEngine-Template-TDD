@@ -1,13 +1,10 @@
-import Endpoint from 'entities/endpoint/endpoint';
+import Endpoint from "entities/endpoint/endpoint";
 
 export default interface IServerCongig {
-	port:number;
-	globalMiddlewares:[];
-	errorMiddlewares:[];
-	endpoints:Endpoint[];
-	initCallbacks:any[];
-	shutdownCallbacks:any[];
+  port: number | string;
+  globalMiddlewares: any[];
+  errorMiddlewares: any[];
+  endpoints: Endpoint[];
+  initCallbacks: any[];
+  shutdownCallbacks: any[];
 }
-
-
-
