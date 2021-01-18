@@ -23,7 +23,6 @@ export default class Endpoint {
   // 外部注入Server, 將之把所有裝飾器做註冊
   public register(app: express.Application) {
     this.initDecorate();
-    // this.middlewares.forEach((x) => console.log(`is:${x}`));
     app[this.config.method](this.config.path, ...this.middlewares);
   }
 
@@ -70,7 +69,7 @@ export default class Endpoint {
 
   // 註冊Log handler
   private registerLogHandler() {
-    // TODO 做一個處理log紀錄的管理區
+    // TODO 做一個處理log紀錄的管理區 - log的部分都統一傳入某server進行儲存。
     return this;
   }
 }

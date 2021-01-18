@@ -4,8 +4,8 @@ import createHmac from "../createHmac/createHmac";
 
 export default function verifySign(data: IHmacPayload): boolean {
   // obtain a buffer digest
-  const hmac = createHmac(data.payload);
-  const digest = Buffer.from(JSON.stringify(hmac), "base64");
+  const hmac = createHmac(data.payload).toString();
+  const digest = Buffer.from(hmac, "base64");
   // Transform the signature to buffer
   // 這個 signature是hmac的payload
   const checkSum = Buffer.from(JSON.stringify(data.signature), "base64");

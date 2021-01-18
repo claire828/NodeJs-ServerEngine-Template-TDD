@@ -1,6 +1,22 @@
+import cors from "cors";
 import express from "express";
 import http from "http";
+import morgan from "morgan";
 import iServerConfig from "../../configs/IServerConfig";
+
+const ACCESS_LOG = JSON.stringify({
+  method: ":method",
+  status: ":status",
+  url: ":url",
+  "http-version": ":http-version",
+  ip: ":remote-addr",
+  "user-agent": ":user-agent",
+  "content-length": ":res[content-length]",
+  referrer: ":referrer",
+  "response-time": ":response-time",
+  severity: "DEBUG",
+  message: ":method :url [:status]",
+});
 
 // TODO 未來可以加入https伺服器，根據憑證決定創建立
 export default class Server {
@@ -15,20 +31,20 @@ export default class Server {
   constructor(conf: iServerConfig) {
     this.config = conf;
     this.app = express();
-    this.checkEnvironment();
+    this.registerDefaultMiddlewares();
     this.registerMiddlewares();
     this.registerEndpoints();
   }
 
-  private checkEnvironment() {
-    // 這邊觀察一下不合法的話他會吐什麼東西出來
-    // envalid.cleanEnv(process.env,{ port:envalid.port()});
-    // 強型別的時候，根本不需要再check config的內容是否合法，因為他絕對是合法的。
+  //// parse body params and attache them to req.body
+  private registerDefaultMiddlewares() {
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(cors());
+    this.app.use(morgan(ACCESS_LOG));
   }
 
   private registerMiddlewares() {
-    // apply global middlewares
-    // TODO middleware有分path/function這兩種
     this.config.globalMiddlewares.forEach((middleware) => {
       this.app.use(middleware);
     });
