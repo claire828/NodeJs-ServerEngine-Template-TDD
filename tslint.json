@@ -25,7 +25,7 @@
         "class-name":true,
         "binary-expression-operand-order":true,
         "triple-equals":true,
-        "no-unused-variable":true,
+        "no-unused-variable":false,
         "no-unused-expression":true,
         "no-empty":true,
         "await-promise":true,

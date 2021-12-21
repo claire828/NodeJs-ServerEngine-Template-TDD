@@ -65,7 +65,7 @@ export default class Server {
           console.log(
             `⚡️[server]: Server is running at http://localhost:${this.config.port}`
           );
-          resolve();
+          resolve(this);
         }))
     );
   }
@@ -79,7 +79,7 @@ export default class Server {
           this.config.shutdownCallbacks.map((callback) => callback())
         );
         console.log(`⚡️[server]: Server is shutdown`);
-        resolve();
+        resolve(this);
       });
       this.server.close();
     });

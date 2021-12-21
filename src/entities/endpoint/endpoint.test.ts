@@ -13,7 +13,7 @@ import Endpoint from "../../entities/endpoint/endpoint";
 import signPayload from "../../utils/hmac/signPayload/signPayload";
 
 const path = "/hi";
-const func = (req, res, next) => {
+const func = (req:express.Request, res:express.Response, next:express.NextFunction) => {
   next();
 };
 let sayHi: IEndpointConfig;

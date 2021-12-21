@@ -33,6 +33,8 @@ describe("entities - server", () => {
   });
 
   it("it should handle endpoints", async () => {
+
+    // create endpoint
     const path = "/hi";
     const sayHi: IEndpointConfig = {
       path,
@@ -45,6 +47,8 @@ describe("entities - server", () => {
       authType: AuthType.NONE,
     };
     const sayHiEndpoint = new Endpoint(sayHi);
+
+    // create server
     const config: iServerConfig = {
       port: 3001,
       globalMiddlewares: [],

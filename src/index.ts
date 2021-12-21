@@ -1,11 +1,15 @@
+import dotenv from 'dotenv';
 import IServerConfig from "./configs/IServerConfig";
-import server from "./entities/server/server";
+import {helloEndpoint} from './entities/endpoint/hello/helloEndpoint.js';
+import server from "./entities/server/server.js";
+dotenv.config();
+
 
 const config: IServerConfig = {
   port: +process.env.PORT,
   globalMiddlewares: [],
   errorMiddlewares: [],
-  endpoints: [],
+  endpoints: [helloEndpoint],
   initCallbacks: [],
   shutdownCallbacks: [],
 };

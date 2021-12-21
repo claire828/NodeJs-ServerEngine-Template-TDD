@@ -1,8 +1,4 @@
-import express from "express";
-import jwt from "jsonwebtoken";
 import { fake } from "sinon";
-import request from "supertest";
-import authJWT from "./authJWT";
 
 describe("entities - authJWT", () => {
   const next = fake();

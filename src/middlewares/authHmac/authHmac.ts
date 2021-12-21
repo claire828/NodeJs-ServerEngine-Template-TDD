@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import IHmacPayload from "../../utils/hmac/common/IHmacPayload";
-import verifySign from "../../utils/hmac/verifySign/verifySign";
+import IHmacPayload from "../../utils/hmac/common/IHmacPayload.js";
+import verifySign from "../../utils/hmac/verifySign/verifySign.js";
 
 export default function authHmac(
   req: Request,
