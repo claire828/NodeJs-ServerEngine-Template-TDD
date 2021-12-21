@@ -1,8 +1,8 @@
 import express from "express";
-import { AuthType, IEndpointConfig } from "../../configs/IEndpointConfig.js";
-import authHmac from "../../middlewares/authHmac/authHmac.js";
-import authJWT from "../../middlewares/authJWT/authJWT.js";
-import { validate } from "../../middlewares/validate/validate.js";
+import { AuthType, IEndpointConfig } from "../../configs/IEndpointConfig";
+import authHmac from "../../middlewares/authHmac/authHmac";
+import authJWT from "../../middlewares/authJWT/authJWT";
+import { validate } from "../../middlewares/validate/validate";
 
 export default class Endpoint {
   private config: IEndpointConfig;

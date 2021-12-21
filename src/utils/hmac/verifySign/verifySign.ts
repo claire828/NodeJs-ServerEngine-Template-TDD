@@ -1,6 +1,6 @@
 import crypto from "crypto";
-import IHmacPayload from "../common/IHmacPayload.js";
-import createHmac from "../createHmac/createHmac.js";
+import IHmacPayload from "../common/IHmacPayload";
+import createHmac from "../createHmac/createHmac";
 
 export default function verifySign(data: IHmacPayload): boolean {
   // obtain a buffer digest

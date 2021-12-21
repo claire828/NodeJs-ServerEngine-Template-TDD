@@ -1,5 +1,5 @@
-import IHmacPayload from "../common/IHmacPayload.js";
-import createHmac from "../createHmac/createHmac.js";
+import IHmacPayload from "../common/IHmacPayload";
+import createHmac from "../createHmac/createHmac";
 
 // pack final struct send to clients by add signature to the payload
 export default function signPayload(payload: {}): IHmacPayload {

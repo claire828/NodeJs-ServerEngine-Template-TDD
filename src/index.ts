@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import IServerConfig from "./configs/IServerConfig";
-import {helloEndpoint} from './entities/endpoint/hello/helloEndpoint.js';
-import server from "./entities/server/server.js";
+import {helloEndpoint} from './entities/endpoint/hello/helloEndpoint';
+import server from "./entities/server/server";
 dotenv.config();
 
 
