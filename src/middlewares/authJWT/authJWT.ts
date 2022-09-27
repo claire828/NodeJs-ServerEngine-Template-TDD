@@ -12,7 +12,7 @@ interface Idecode {
    Authorization: 'Bearer ' + token */
 // JWT最好要使用在https的伺服器才安全。
 // 目前這邊就Method.Get + Header
-// 如果要Post + body 那要再另外改一下下
+//TODO Post + body 那要再+改一下下
 export default function authJWT(
   req: Request,
   res: Response,
