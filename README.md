@@ -51,8 +51,7 @@ Below is the simplified version of the application structure.
     └── middlewares (dir)
     │ 
     └── utils (dir)
-    │ 
-    └── 
+
         
 ```
 
